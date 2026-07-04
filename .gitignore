@@ -1,0 +1,31 @@
+# Environment and secrets
+.env
+
+# Database and runtime data
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Temp audio extracted during transcription
+*.tmp.wav
+/tmp/
+
+# Sample recordings (local only)
+samples/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
