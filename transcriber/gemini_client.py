@@ -38,17 +38,19 @@ _AUDIO_MIME_TYPES = {
 
 TRANSCRIPTION_PROMPT = """\
 Transcribe this call recording verbatim.
-
+ 
 Requirements:
 - Preserve Arabic script exactly; do not translate Arabic to English.
-- Preserve English text exactly; do not translate English to Arabic.
-- When speakers code-switch within a sentence, keep the mix in one segment.
+- Preserve English text exactly in Latin script (a-z); do NOT transliterate English words into Arabic script.
+- When speakers code-switch within a sentence, keep the mix in one segment with each word in its original script.
 - Modern Standard Arabic and regional dialects are both acceptable; transcribe what you hear.
 - Provide segment-level start_ms and end_ms timestamps in milliseconds from the start of the audio.
 - Identify distinct speakers as "Speaker 1", "Speaker 2", etc. when discernible; otherwise omit speaker.
 - Tag each segment's dominant language as "ar", "en", or "mixed".
 - Do not invent words, names, or content that are not clearly spoken.
 - Include a brief one-line summary of the call in English in the summary field.
+ 
+CRITICAL: English words must remain in Latin script (e.g., "hello", "computer"), never in Arabic script (e.g., not "هلو" or "كمبيوتر"). Arabic words must remain in Arabic script.
 """
 
 T = TypeVar("T")
