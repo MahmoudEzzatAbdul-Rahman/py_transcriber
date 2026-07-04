@@ -166,7 +166,7 @@ def list() -> None:
         table.add_row(
             rec.id,
             rec.filename[:30] + "..." if len(rec.filename) > 30 else rec.filename,
-            f"[{status_color}]{rec.value}[/{status_color}]",
+            f"[{status_color}]{rec.status}[/{status_color}]",
             str(rec.segment_count),
             created_str,
         )

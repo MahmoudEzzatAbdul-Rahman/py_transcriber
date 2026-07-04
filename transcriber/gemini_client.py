@@ -24,6 +24,9 @@ DEFAULT_MODEL = "gemini-2.5-flash"
 FILE_POLL_INTERVAL_SEC = 2.0
 FILE_POLL_TIMEOUT_SEC = 300.0
 
+# Mock mode for testing without API key
+_MOCK_MODE = os.getenv("GEMINI_MOCK_MODE", "").lower() in ("1", "true", "yes")
+
 _AUDIO_MIME_TYPES = {
     ".wav": "audio/wav",
     ".mp3": "audio/mpeg",
@@ -117,11 +120,13 @@ def _ensure_env_loaded() -> None:
 
 def get_api_key() -> str:
     """Return GEMINI_API_KEY from the environment."""
+    if _MOCK_MODE:
+        return "mock-key"
     _ensure_env_loaded()
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise GeminiConfigError(
-            "GEMINI_API_KEY is not set. Copy .env.example to .env and add your API key."
+            "GEMINI_API_KEY is not set. Copy .env.example to .env and add your API key, or set GEMINI_MOCK_MODE=1 to use mock mode."
         )
     return api_key
 
@@ -331,6 +336,56 @@ def _generate_transcription(
     raise GeminiTranscriptionError("Gemini returned an empty transcription response.")
 
 
+def _mock_transcription(audio_path: Path | str) -> TranscriptionResult:
+    """Return mock transcription data for testing without API key."""
+    logger.info("Using mock transcription mode (no API call)")
+    return TranscriptionResult(
+        summary="Mock call summary: A brief conversation about project requirements and timeline.",
+        segments=[
+            TranscriptSegment(
+                start_ms=0,
+                end_ms=4200,
+                text="Hello, how are you today?",
+                language=SegmentLanguage.EN,
+                segment_index=0,
+                speaker="Speaker 1",
+            ),
+            TranscriptSegment(
+                start_ms=4200,
+                end_ms=8500,
+                text="أنا بخير، شكراً لك. كيف يمكنني مساعدتك؟",
+                language=SegmentLanguage.AR,
+                segment_index=1,
+                speaker="Speaker 2",
+            ),
+            TranscriptSegment(
+                start_ms=8500,
+                end_ms=12000,
+                text="We need to discuss the project timeline and deliverables.",
+                language=SegmentLanguage.EN,
+                segment_index=2,
+                speaker="Speaker 1",
+            ),
+            TranscriptSegment(
+                start_ms=12000,
+                end_ms=16000,
+                text="بالتأكيد، لدي بعض الأسئلة حول المواصفات الفنية",
+                language=SegmentLanguage.MIXED,
+                segment_index=3,
+                speaker="Speaker 2",
+            ),
+            TranscriptSegment(
+                start_ms=16000,
+                end_ms=20000,
+                text="Sure, let's go through them one by one.",
+                language=SegmentLanguage.EN,
+                segment_index=4,
+                speaker="Speaker 1",
+            ),
+        ],
+    )
+
+
 def transcribe_audio(
     audio_path: Path | str,
     *,
@@ -341,7 +396,11 @@ def transcribe_audio(
     Upload audio to Gemini and return structured transcript segments.
 
     Uploaded files are deleted from Gemini storage after transcription completes.
+    In mock mode (GEMINI_MOCK_MODE=1), returns fake data without API calls.
     """
+    if _MOCK_MODE:
+        return _mock_transcription(audio_path)
+
     owns_client = client is None
     gemini_client = client or create_client()
     model_name = model or get_model_name()

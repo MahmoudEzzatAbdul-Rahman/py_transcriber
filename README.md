@@ -21,20 +21,40 @@ cp .env.example .env          # then set GEMINI_API_KEY
 
 ```bash
 # Transcribe a recording (audio or video; screen share video uses audio track only)
-python -m transcriber.cli transcribe path/to/recording.mp4
+.venv/bin/python -m transcriber.cli transcribe path/to/recording.mp4
 
 # List all recordings
-python -m transcriber.cli list
+.venv/bin/python -m transcriber.cli list
 
 # Show full transcript for a recording
-python -m transcriber.cli show <recording_id>
+.venv/bin/python -m transcriber.cli show <recording_id>
 
 # Export as JSON
-python -m transcriber.cli show <recording_id> --json
+.venv/bin/python -m transcriber.cli show <recording_id> --json
 
 # Filter by time range (seconds)
-python -m transcriber.cli show <recording_id> --from 120 --to 300
+.venv/bin/python -m transcriber.cli show <recording_id> --from 120 --to 300
 ```
+
+## Testing without API key
+
+For testing without a Gemini API key, enable mock mode:
+
+```bash
+GEMINI_MOCK_MODE=1 .venv/bin/python -m transcriber.cli transcribe path/to/recording.mp4
+```
+
+Mock mode returns pre-defined transcription data with mixed Arabic/English segments, allowing you to test the full CLI workflow.
+
+## Testing without API key
+
+For testing without a Gemini API key, enable mock mode:
+
+```bash
+GEMINI_MOCK_MODE=1 python -m transcriber.cli transcribe path/to/recording.mp4
+```
+
+Mock mode returns pre-defined transcription data with mixed Arabic/English segments, allowing you to test the full CLI workflow.
 
 ## Example output
 
@@ -52,6 +72,8 @@ Recording abc123 saved (42 segments)
 | `GEMINI_API_KEY` | — | Required. Your Google AI API key |
 | `DATABASE_PATH` | `./data/transcriber.db` | SQLite database file location |
 | `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model for transcription |
+| `GEMINI_MOCK_MODE` | `0` | Set to `1` to use mock transcription without API calls (for testing) |
+| `GEMINI_MOCK_MODE` | `0` | Set to `1` to use mock transcription without API calls (for testing) |
 
 ## Project layout
 
