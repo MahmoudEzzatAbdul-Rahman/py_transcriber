@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: cli
     content: "Implement Typer CLI: transcribe, list, show (with optional --json and time range)"
-    status: pending
+    status: completed
   - id: e2e-docs
     content: Run end-to-end with sample file; finalize README and error handling
     status: pending
